@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Market data and research outputs (never committed)
+/data/
+*.parquet
+*.sqlite
+*.sqlite3
+*.db
+
+# Secrets and local settings
+.env
+.env.*
+!.env.example
+.claude/settings.local.json
+
+# Holdout approval tokens are created by the owner, never committed
+protocol/approvals/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

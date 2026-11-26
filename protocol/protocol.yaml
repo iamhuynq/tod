@@ -1,0 +1,58 @@
+# Research protocol. DRAFT until frozen at the end of P0.
+# Changing this file after the freeze requires owner approval and a new protocol_version.
+# See docs/autonomous-quant-research-plan.md, sections 4-6.
+
+protocol_version: "1.2-draft"
+status: draft            # draft | frozen
+freeze_timestamp: null   # ISO-8601 UTC, set at freeze
+holdout_policy_version: "1"
+
+periods:
+  development:
+    start: "2022-01-01"
+    end: "2025-11-30"
+  holdout_a:
+    start: "2025-12-01"
+    end: "2026-05-31"
+  holdout_b:
+    start: "2026-06-01"
+    end: null            # = freeze date
+  # Prospective period starts at freeze_timestamp.
+
+execution:
+  order_type: market
+  order_notional_usd: 100
+  default_latency_minutes: 1
+  latency_sensitivity_minutes: [1, 2, 5]
+
+cost_model:
+  version: "COST-000001"
+  taker_fee: 0.0010       # per side; UNCONFIRMED (open item: fee tier, BNB discount)
+  spread_floor:
+    majors: 0.0001        # BTCUSDT, ETHUSDT
+    others: 0.0003
+  slippage_multiplier_of_half_spread: 0.5
+  max_notional_fraction_of_1h_volume: 0.001
+
+statistics:
+  exploratory_fdr_q: 0.10
+  pair_specific_fdr_q: 0.05
+  confirmatory_alpha: 0.05
+  min_independent_clusters: 30
+  bootstrap_block_length_days: 1
+  cluster_window_minutes: 15
+  shock_sigma: 3.0
+  economic_gate_cost_multiple: 2.0
+
+universe:
+  size_p1_p4: 15
+  quote_asset: USDT
+  min_history_days: 60
+  ranking_window_days: 30
+
+horizons: ["15m", "1h", "4h"]
+diagnostic_horizons: ["5m"]
+
+kill_criteria:
+  review_after: "P4 + 4 weeks of scheduled scanning"
+  max_trials_without_holdout_pass: 100000
