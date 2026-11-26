@@ -37,7 +37,7 @@ def render_audit_report(result: AuditResult, protocol_version: str) -> str:
         "",
         "## Symbols",
         "",
-        f"- USDT-quoted symbols in archive: {s.height}",
+        f"- Symbols recorded (rule-excluded + candidates with development data): {s.height}",
         f"- Included candidates with development-period data: {with_data.height}",
         f"- Candidates whose data ends before the last development month "
         f"(delisted or halted): {delisted.height}",
