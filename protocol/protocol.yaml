@@ -1,11 +1,21 @@
-# Research protocol. DRAFT until frozen at the end of P0.
-# Changing this file after the freeze requires owner approval and a new protocol_version.
+# Research protocol. FROZEN at the end of P0 (owner approval 2026-11-26).
+# Changing this file requires owner approval and a new protocol_version.
 # See docs/autonomous-quant-research-plan.md, sections 4-6.
 
-protocol_version: "1.2-draft"
-status: draft            # draft | frozen
-freeze_timestamp: null   # ISO-8601 UTC, set at freeze
+protocol_version: "1.2"
+status: frozen           # draft | frozen
+freeze_timestamp: "2026-11-26T03:18:41Z"
 holdout_policy_version: "1"
+
+# Assumptions accepted at freeze because the owner deferred these questions.
+# Revisit = new protocol_version; record any holdout exposure in holdout_exposure_log.
+assumptions:
+  holdout_exposure: >-
+    Assumed not exposed: no research on data after 2025-11-30 is known to have
+    informed this protocol. Not explicitly confirmed by the owner.
+  fees: >-
+    Standard taker fee 0.10% per side, no BNB discount (conservative).
+    Account fee tier not confirmed.
 
 periods:
   development:
@@ -16,8 +26,8 @@ periods:
     end: "2026-05-31"
   holdout_b:
     start: "2026-06-01"
-    end: null            # = freeze date
-  # Prospective period starts at freeze_timestamp.
+    end: "2026-11-25"    # last full UTC day before the freeze
+  # Prospective period starts at 2026-11-26 (freeze day) onward.
 
 execution:
   order_type: market
@@ -27,7 +37,7 @@ execution:
 
 cost_model:
   version: "COST-000001"
-  taker_fee: 0.0010       # per side; UNCONFIRMED (open item: fee tier, BNB discount)
+  taker_fee: 0.0010       # per side; see assumptions.fees
   spread_floor:
     majors: 0.0001        # BTCUSDT, ETHUSDT
     others: 0.0003

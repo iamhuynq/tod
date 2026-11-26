@@ -9,7 +9,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 def test_repo_protocol_loads() -> None:
     p = load_protocol(REPO_ROOT / "protocol" / "protocol.yaml")
-    assert p.status == "draft"
+    assert p.is_frozen
+    assert p.version == "1.2"
+    assert p.holdout_b.end is not None
     assert p.development.end is not None
     assert p.development.end < p.holdout_a.start
     assert p.universe.min_history_days == 180

@@ -13,4 +13,4 @@ uv run pytest
 uv run qrs info
 ```
 
-Status: P0 (spec and audit) in progress.
+Status: P0 complete (protocol 1.2 frozen 2026-11-26). P1 (data foundation) planning.

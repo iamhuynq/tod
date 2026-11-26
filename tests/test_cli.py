@@ -8,7 +8,7 @@ runner = CliRunner()
 def test_info() -> None:
     result = runner.invoke(app, ["info"])
     assert result.exit_code == 0, result.output
-    assert "protocol 1.2-draft (draft)" in result.output
+    assert "protocol 1.2 (frozen)" in result.output
 
 
 def test_check_path_rejects_holdout() -> None:
