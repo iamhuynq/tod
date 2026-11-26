@@ -24,12 +24,22 @@ class Period:
 
 
 @dataclass(frozen=True)
+class UniverseConfig:
+    size: int
+    min_history_days: int
+    ranking_window_days: int
+    min_active_days: int
+    engineering_symbols: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class Protocol:
     version: str
     status: str
     development: Period
     holdout_a: Period
     holdout_b: Period
+    universe: UniverseConfig
     raw: dict[str, Any]
 
     @property
@@ -63,6 +73,29 @@ def _period(raw: dict[str, Any], name: str) -> Period:
     return Period(start=start, end=_parse_date(block.get("end"), f"periods.{name}.end"))
 
 
+def _universe(raw: dict[str, Any]) -> UniverseConfig:
+    u = raw.get("universe")
+    if not isinstance(u, dict):
+        raise ProtocolError("universe section is missing")
+    try:
+        cfg = UniverseConfig(
+            size=int(u["size_p1_p4"]),
+            min_history_days=int(u["min_history_days"]),
+            ranking_window_days=int(u["ranking_window_days"]),
+            min_active_days=int(u["min_active_days"]),
+            engineering_symbols=tuple(str(s) for s in u["engineering_symbols"]),
+        )
+    except KeyError as exc:
+        raise ProtocolError(f"universe.{exc.args[0]} is required") from exc
+    if cfg.size < 1 or cfg.min_history_days < 0 or cfg.ranking_window_days < 1:
+        raise ProtocolError("universe values must be positive")
+    if not 0 < cfg.min_active_days <= cfg.ranking_window_days:
+        raise ProtocolError("universe.min_active_days must be within the ranking window")
+    if not cfg.engineering_symbols:
+        raise ProtocolError("universe.engineering_symbols must not be empty")
+    return cfg
+
+
 def _validate(p: Protocol) -> None:
     if p.status not in {"draft", "frozen"}:
         raise ProtocolError(f"status must be 'draft' or 'frozen', got {p.status!r}")
@@ -90,6 +123,7 @@ def load_protocol(path: Path) -> Protocol:
         development=_period(raw, "development"),
         holdout_a=_period(raw, "holdout_a"),
         holdout_b=_period(raw, "holdout_b"),
+        universe=_universe(raw),
         raw=raw,
     )
     _validate(protocol)

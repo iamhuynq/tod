@@ -47,8 +47,12 @@ statistics:
 universe:
   size_p1_p4: 15
   quote_asset: USDT
-  min_history_days: 60
+  min_history_days: 180      # excludes post-listing behavior (owner decision 2026-11-26)
   ranking_window_days: 30
+  min_active_days: 20
+  # P1-P2 engineering runs on the symbols that were top-15 members in every
+  # development month (P0 audit), then on the full monthly top 15.
+  engineering_symbols: [BTCUSDT, ETHUSDT, BNBUSDT, SOLUSDT, XRPUSDT]
 
 horizons: ["15m", "1h", "4h"]
 diagnostic_horizons: ["5m"]

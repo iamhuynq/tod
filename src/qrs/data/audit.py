@@ -76,7 +76,6 @@ async def _download_month(
 async def run_audit(
     paths: ProjectPaths,
     protocol: Protocol,
-    universe_size: int = 15,
     concurrency: int = 16,
     symbol_limit: int | None = None,
 ) -> AuditResult:
@@ -129,10 +128,24 @@ async def run_audit(
                                   "quote_volume": pl.Float64})
     )  # fmt: skip
     pegged = detect_pegged(daily) if daily.height else set()
-    first_available = {s: ms[0] for s, ms in avail.items() if ms and s not in pegged}
+    # Listing date: first daily bar when the listing falls inside the downloaded range,
+    # otherwise the first archive month (which is long before the 180-day threshold).
+    first_bar = dict(daily.group_by("symbol").agg(pl.col("day").min()).iter_rows())
+    first_available = {
+        s: (first_bar.get(s, ms[0]) if ms[0] >= data_months[0] else ms[0])
+        for s, ms in avail.items()
+        if ms and s not in pegged
+    }
+    u = protocol.universe
     ranking = monthly_ranking(
-        daily.select("symbol", "day", "quote_volume"), first_available, rank_months
+        daily.select("symbol", "day", "quote_volume"),
+        first_available,
+        rank_months,
+        window_days=u.ranking_window_days,
+        min_history_days=u.min_history_days,
+        min_active_days=u.min_active_days,
     )
+    universe_size = u.size
     membership = ranking.filter(pl.col("rank") <= universe_size)
 
     # Keep excluded symbols (rule-based, no listing needed) and candidates with

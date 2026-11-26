@@ -107,7 +107,7 @@ can (for example by printing statistics while debugging). Controls:
 | # | Item | Decision | Status |
 |---|---|---|---|
 | 1 | Exchange / market | Binance Spot only; `needs_short` findings kept as knowledge | Decided |
-| 2 | Universe for P1-P4 | 15 liquid USDT pairs, point-in-time; expand to 30, then 50 after P4 runtime is measured | Decided |
+| 2 | Universe for P1-P4 | 15 liquid USDT pairs, point-in-time, >= 180 days since listing; expand to 30, then 50 after P4 runtime is measured. P1-P2 engineering first runs on the 5 always-member pairs (BTC, ETH, BNB, SOL, XRP) | Decided |
 | 3 | Stored resolution | 1m candles | Decided |
 | 4 | Evaluation horizons | 15m, 1h, 4h; 5m diagnostic only | Decided |
 | 5 | aggTrades | Deferred to P4b; BTC, ETH + 3 alts if order-flow generators are added | Decided |
@@ -353,8 +353,9 @@ an audit that, for every month from 2022-01:
 - records missing metadata and a `reconstruction_confidence` (high / medium /
   low).
 
-Excluded: stablecoin-to-stablecoin pairs, leveraged tokens, pairs with less
-than 60 days of history at ranking time. Months with low confidence are marked
+Excluded: stablecoin-to-stablecoin pairs, leveraged tokens, pegged-price
+pairs, pairs with less than 180 days of history at ranking time (post-listing
+behavior is atypical). Months with low confidence are marked
 incomplete and excluded from market-wide claims, never silently filled with
 today's symbols.
 

@@ -38,14 +38,15 @@ def check_path(path: Path) -> None:
 
 @app.command("audit-archive")
 def audit_archive(
-    universe_size: int = typer.Option(15, help="Members per month"),
     concurrency: int = typer.Option(16, help="Parallel HTTP requests"),
     symbol_limit: int | None = typer.Option(None, help="Limit candidates (smoke runs)"),
     report: Path = typer.Option(
         Path("docs/phase-reports/P0-archive-audit.md"), help="Markdown report path"
     ),
 ) -> None:
-    """P0: audit archive coverage and rebuild the point-in-time universe."""
+    """P0: audit archive coverage and rebuild the point-in-time universe.
+
+    Universe parameters come from protocol/protocol.yaml (universe section)."""
     import asyncio
 
     from qrs.data.audit import run_audit
@@ -53,7 +54,7 @@ def audit_archive(
 
     paths = get_paths()
     protocol = load_protocol(paths.protocol_file)
-    result = asyncio.run(run_audit(paths, protocol, universe_size, concurrency, symbol_limit))
+    result = asyncio.run(run_audit(paths, protocol, concurrency, symbol_limit))
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(render_audit_report(result, protocol.version), encoding="utf-8")
     typer.echo(f"symbols={result.symbols.height} failures={len(result.failures)}")
